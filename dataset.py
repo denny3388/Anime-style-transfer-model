@@ -1,121 +1,53 @@
-import torch.utils.data as data
-
-from PIL import Image
-
+from bs4 import BeautifulSoup
+import requests
 import os
-import os.path
-import torch
+import time
 
 
-def has_file_allowed_extension(filename, extensions):
-    """Checks if a file is an allowed extension.
+def find_anime_names(startPage, endPage):
+    anime_names = []
 
-    Args:
-        filename (string): path to a file
+    for i in range(startPage, endPage+1):
+        url = "https://www.anime-planet.com/anime/all"
+        if i > 1:
+            url = url + "?page=" + str(i)
 
-    Returns:
-        bool: True if the filename ends with a known image extension
-    """
-    filename_lower = filename.lower()
-    return any(filename_lower.endswith(ext) for ext in extensions)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36'}
+        response = requests.get(url=url, headers=headers)
+        soup = BeautifulSoup(response.text, "lxml")
 
+        results = soup.find_all("a")
+        for result in results:
+            string = result.get("class")
+            if string != None and len(string[0]) > 6 and string[0] == "tooltip" and len(string) > 1 and len(string[1]) > 4 and string[1][0:5] == "anime":
+                name = result.get("href").split('/')[2]
+                anime_names.append(name)
 
-def find_classes(dir):
-    classes = [d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d))]
-    classes.sort()
-    class_to_idx = {classes[i]: i for i in range(len(classes))}
-    return classes, class_to_idx
-
-
-def make_dataset(dir, extensions):
-    images = []
-    for root, _, fnames in sorted(os.walk(dir)):
-        for fname in sorted(fnames):
-            if has_file_allowed_extension(fname, extensions):
-                path = os.path.join(root, fname)
-                gender, age = fname.split('(')[0].split('_')[0:2]
-                label = [0, 0, 0, 0] # one-hot vector
-                if 'F' in gender and 'young' in age:
-                    label[0] = 1
-                elif 'F' in gender and 'middle' in age:
-                    label[1] = 1
-                elif 'M' in gender and 'young' in age:
-                    label[2] = 1
-                elif 'M' in gender and 'middle' in age:
-                    label[3] = 1
-                
-                label = torch.tensor(label)
-                item = (path, label)
-                images.append(item)
-
-    return images
+    return anime_names
 
 
-class DatasetFolder(data.Dataset):
-    def __init__(self, root, loader, extensions, transform=None, target_transform=None):
-        # classes, class_to_idx = find_classes(root)
-        samples = make_dataset(root, extensions)
-        if len(samples) == 0:
-            raise(RuntimeError("Found 0 files in subfolders of: " + root + "\n"
-                               "Supported extensions are: " + ",".join(extensions)))
+def get_imgs(anime_names):
+    for anime_name in anime_names:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36'}
+        response = requests.get(
+            url=f"https://www.anime-planet.com/anime/" + anime_name + "/characters", headers=headers)
+        soup = BeautifulSoup(response.text, "lxml")
 
-        self.root = root
-        self.loader = loader
-        self.extensions = extensions
-        self.samples = samples
+        results = soup.find_all("img")
 
-        self.transform = transform
-        self.target_transform = target_transform
+        img_links = [r.get("src") for r in results]
 
-    def __getitem__(self, index):
-        """
-        Args:
-            index (int): Index
-
-        Returns:
-            tuple: (sample, target) where target is class_index of the target class.
-        """
-        path, target = self.samples[index]
-        sample = self.loader(path)
-        if self.transform is not None:
-            sample = self.transform(sample)
-        if self.target_transform is not None:
-            target = self.target_transform(target)
-
-        return sample, target
-
-    def __len__(self):
-        return len(self.samples)
-
-    def __repr__(self):
-        fmt_str = 'Dataset ' + self.__class__.__name__ + '\n'
-        fmt_str += '    Number of datapoints: {}\n'.format(self.__len__())
-        fmt_str += '    Root Location: {}\n'.format(self.root)
-        tmp = '    Transforms (if any): '
-        fmt_str += '{0}{1}\n'.format(tmp, self.transform.__repr__().replace('\n', '\n' + ' ' * len(tmp)))
-        tmp = '    Target Transforms (if any): '
-        fmt_str += '{0}{1}'.format(tmp, self.target_transform.__repr__().replace('\n', '\n' + ' ' * len(tmp)))
-        return fmt_str
+        for index, link in enumerate(img_links):
+            if "https://" not in link:
+                img = requests.get(
+                    url="https://www.anime-planet.com" + link)
+                with open("anime_data/" + anime_name + str(index) + ".jpg", "wb") as file:
+                    file.write(img.content)
+                    print(anime_name + str(index) + ".jpg")
 
 
-IMG_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif']
-
-
-def pil_loader(path):
-    # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
-    with open(path, 'rb') as f:
-        img = Image.open(f)
-        return img.convert('RGB')
-
-
-def default_loader(path):
-    return pil_loader(path)
-
-
-class ImageFolder(DatasetFolder):
-    def __init__(self, root, transform=None, target_transform=None,
-                 loader=default_loader):
-        super(ImageFolder, self).__init__(root, loader, IMG_EXTENSIONS,
-                                          transform=transform,
-                                          target_transform=target_transform)
-        self.imgs = self.samples
+def dataset(startPage, endPage):
+    anime_names = find_anime_names(startPage, endPage)
+    get_imgs(anime_names)
