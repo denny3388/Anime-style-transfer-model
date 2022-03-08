@@ -4,6 +4,8 @@
 
 Given a face picture and two conditions (**sex**, **age**), the model will generate a anime-style face according to the face picture and the conditions.
 
+## Netwotk architechture
+
 ## Usage
 
 ### Train
