@@ -4,6 +4,8 @@
 
 Given a face picture and two conditions (**sex**, **age**), the model will generate a anime-style face according to the face picture and the conditions.
 
+![](/utils/result_1.png)
+
 ## Netwotk architechture
 
 ![](/utils/network.png)
@@ -22,6 +24,10 @@ Given a face picture and two conditions (**sex**, **age**), the model will gener
 ```
 
 ## Results
+
+![](/utils/result_all.png)
+
+[Report](/utils/report.pdf)
 
 ## Reference
 
