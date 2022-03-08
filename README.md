@@ -2,7 +2,7 @@
 
 ## Goal
 
-Given a face picture and two conditions (**sex**, **age**), the model will generate a anime-style face according to the face picture and the conditions.
+Given a face picture and two conditions (**age**, **sex**), the model will generate a anime-style face according to the face picture and the conditions.
 
 ![](/utils/result_1.png)
 
