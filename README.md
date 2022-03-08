@@ -8,6 +8,9 @@ Given a face picture and two conditions (**age**, **sex**), the model will gener
 
 ## Netwotk architechture
 
+It is a GAN(Generative Adversarial Network) with some conditions(labels).
+Label 1 means the age and the sex of the face picture, label 2 represent the age and sex that we want the anime picture to satisfy.
+
 ![](/utils/network.png)
 
 ## Usage
