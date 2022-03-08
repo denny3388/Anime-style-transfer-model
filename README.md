@@ -27,7 +27,7 @@ Given a face picture and two conditions (**sex**, **age**), the model will gener
 
 ![](/utils/result_all.png)
 
-[Report](/utils/report.pdf)
+- [Report](/utils/report.pdf)
 
 ## Reference
 
