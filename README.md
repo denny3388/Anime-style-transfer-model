@@ -29,5 +29,5 @@ Given a face picture and two conditions (**sex**, **age**), the model will gener
 - [U-GAT-IT Official PyTorch Implementation](https://github.com/znxlwm/UGATIT-pytorch)
 - [Anime Planet](https://www.anime-planet.com/)
 - dataset (human face with age & gender)
- - [Source 1](https://github.com/JingchunCheng/All-Age-Faces-Dataset)
- - [Source 2](https://susanqq.github.io/UTKFace/)
+  - [Source 1](https://github.com/JingchunCheng/All-Age-Faces-Dataset)
+  - [Source 2](https://susanqq.github.io/UTKFace/)
