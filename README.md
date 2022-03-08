@@ -37,3 +37,7 @@ Given a face picture and two conditions (**sex**, **age**), the model will gener
 - dataset (human face with age & gender)
   - [Source 1](https://github.com/JingchunCheng/All-Age-Faces-Dataset)
   - [Source 2](https://susanqq.github.io/UTKFace/)
+
+## Partner
+
+羅子涵 Github@hedy881028
