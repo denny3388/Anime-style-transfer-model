@@ -6,7 +6,7 @@ Given a face picture and two conditions (**sex**, **age**), the model will gener
 
 ## Netwotk architechture
 
-![](https://github.com/denny3388/Conditional-UGATIT/blob/main/utils/network.png)
+![](/utils/network.png)
 
 ## Usage
 
